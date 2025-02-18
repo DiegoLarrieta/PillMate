@@ -10,5 +10,7 @@ struct MedicationModel: Identifiable {
     var schedule: Date // Horario de toma
     var image: UIImage? // Imagen del medicamento (opcional)
     var isTaken: Bool = false // Estado de si la pastilla ha sido tomada
+    
 }
+
 

@@ -9,6 +9,7 @@ struct AddMedicationView: View {
     @State private var schedule: Date = Date()
     @Binding var medications: [MedicationModel]
 
+    
     // Unidades para el Picker de Dosage
     let dosageUnits = ["mg", "g", "ml", "L", "unit", "packet"] // Agregamos las opciones
     // Unidades para el Picker de Frequency

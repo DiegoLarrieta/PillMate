@@ -35,6 +35,7 @@ public class TextRecognitionService {
             }
         }
         
+        
         // Crear el handler para ejecutar la solicitud
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         

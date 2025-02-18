@@ -20,6 +20,7 @@ struct IntroContentView: View {
     }
 }
 
+
 struct WelcomeView: View {
     @Binding var currentPage: Int
 

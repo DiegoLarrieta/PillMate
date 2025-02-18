@@ -16,6 +16,7 @@ struct CameraView: View {
                     .padding()
             }
 
+            
             // Solo muestra el botón si se ha capturado una imagen
             if let image = capturedImage {
                 Spacer() // Esto empuja el botón hacia la parte inferior

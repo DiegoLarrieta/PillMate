@@ -84,6 +84,7 @@ struct MainView: View {
             }
         }
     }
+    
 
     private func toggleMedicationTaken(medication: MedicationModel) {
         if let index = medications.firstIndex(where: { $0.id == medication.id }) {
