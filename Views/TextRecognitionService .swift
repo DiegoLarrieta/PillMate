@@ -1,45 +1,72 @@
 import Vision
 import UIKit
 
-// Declaramos la clase como pública para que sea accesible desde otros archivos
+// Define a struct to hold recognized medication details
+public struct RecognizedMedication {
+    var name: String
+    var dosage: String
+    var frequency: String
+    var duration: String
+}
+
 public class TextRecognitionService {
     
-    // Esta función se encarga de hacer el reconocimiento de texto en una imagen
-    public static func recognizeTextInImage(image: UIImage) {
+    // Function to recognize text in an image and return recognized details
+    public static func recognizeTextInImage(image: UIImage, completion: @escaping (RecognizedMedication) -> Void) {
         guard let cgImage = image.cgImage else {
             print("No se pudo convertir la imagen en cgImage")
             return
         }
         
-        // Crear la solicitud de reconocimiento de texto
+        // Create the text recognition request
         let request = VNRecognizeTextRequest { request, error in
-            // Manejar cualquier error en el reconocimiento
             if let error = error {
                 print("Error reconociendo texto: \(error.localizedDescription)")
                 return
             }
             
-            // Extraer los resultados del reconocimiento de texto
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
                 print("No se encontró texto reconocido")
                 return
             }
             
-            // Aquí procesamos el texto que se ha reconocido
+            // Variables to store recognized medication details
+            var medicationName = ""
+            var medicationDosage = ""
+            var medicationFrequency = ""
+            var medicationDuration = ""
+            
+            // Process the recognized text
             for observation in observations {
                 if let topCandidate = observation.topCandidates(1).first {
-                    print("Texto reconocido: \(topCandidate.string)")
+                    let recognizedString = topCandidate.string.lowercased()
                     
-                    // Aquí puedes procesar la información extraída de la receta, como el nombre del medicamento, dosis, etc.
+                    // Identify the relevant information
+                    if recognizedString.contains("mg") || recognizedString.contains("g") {
+                        medicationDosage = topCandidate.string
+                    } else if recognizedString.contains("once a day") || recognizedString.contains("daily") {
+                        medicationFrequency = topCandidate.string
+                    } else {
+                        medicationName = topCandidate.string
+                    }
                 }
             }
+            
+            // Return the recognized details via the completion handler
+            let recognizedMedication = RecognizedMedication(
+                name: medicationName,
+                dosage: medicationDosage,
+                frequency: medicationFrequency,
+                duration: medicationDuration
+            )
+            
+            completion(recognizedMedication)
         }
         
-        
-        // Crear el handler para ejecutar la solicitud
+        // Create the request handler
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         
-        // Ejecutar la solicitud
+        // Perform the text recognition request
         do {
             try requestHandler.perform([request])
         } catch {

@@ -5,7 +5,9 @@ struct AddMedicationView: View {
     @State private var dosage: String = ""
     @State private var selectedDosageUnit: String = "mg" // Default unit for dosage
     @State private var frequencyValue: String = "" // Default frequency value
+    @State private var durationValue: String = ""
     @State private var selectedFrequencyUnit: String = "Hours" // Default unit for frequency
+    @State private var selectedDurationUnit: String = "Days"
     @State private var schedule: Date = Date()
     @Binding var medications: [MedicationModel]
 
@@ -14,6 +16,8 @@ struct AddMedicationView: View {
     let dosageUnits = ["mg", "g", "ml", "L", "unit", "packet"] // Agregamos las opciones
     // Unidades para el Picker de Frequency
     let frequencyUnits = ["Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years"]
+    // Unidades para el Picker de Duration
+    let durationUnits = ["Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years"]
 
     var body: some View {
         Form {
@@ -40,7 +44,7 @@ struct AddMedicationView: View {
                     // Campo de texto para la cantidad de frecuencia
                     TextField("Frequency Value", text: $frequencyValue)
                         .keyboardType(.decimalPad) // Usamos el teclado para números
-                        .frame(width: 50)
+                        .frame(width: 100)
                     
                     // Picker para seleccionar la unidad de frecuencia
                     Picker("", selection: $selectedFrequencyUnit) {
@@ -50,6 +54,23 @@ struct AddMedicationView: View {
                     }
                     .pickerStyle(MenuPickerStyle()) // Estilo de menú para el Picker
                 }
+                
+                // HStack para medicationDuration
+                HStack {
+                    // Campo de texto para la cantidad de frecuencia
+                    TextField("Treatment Duration", text: $durationValue)
+                        .keyboardType(.decimalPad) // Usamos el teclado para números
+                        .frame(width: 100)
+                    
+                    // Picker para seleccionar la unidad de frecuencia
+                    Picker("", selection: $selectedDurationUnit) {
+                        ForEach(durationUnits, id: \.self) { unit in
+                            Text(unit).tag(unit)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle()) // Estilo de menú para el Picker
+                }
+                
 
                 DatePicker("Schedule", selection: $schedule, displayedComponents: .hourAndMinute)
             }
@@ -67,6 +88,7 @@ struct AddMedicationView: View {
             name: name,
             dosage: dosage + " " + selectedDosageUnit, // Unimos la dosis con la unidad seleccionada
             frequency: frequencyValue + " " + selectedFrequencyUnit, // Unimos la frecuencia con la unidad seleccionada
+            duration: durationValue + " " + selectedDurationUnit,
             schedule: schedule,
             image: nil,
             isTaken: false

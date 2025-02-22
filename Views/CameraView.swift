@@ -2,41 +2,44 @@ import SwiftUI
 import AVFoundation
 
 struct CameraView: View {
-    @Binding var capturedImage: UIImage? // Binding para la imagen capturada
     @State private var isCameraReady = false
+    @Binding var capturedImage: UIImage?
+    @Binding var medicationName: String
+    @Binding var dosage: String
+    @Binding var frequency: String
+    @Binding var duration:String
 
     var body: some View {
         VStack {
             if isCameraReady {
                 CameraRepresentable(capturedImage: $capturedImage)
-                    .edgesIgnoringSafeArea(.all) // Asegura que la cámara ocupe toda la pantalla
+                    .edgesIgnoringSafeArea(.all)
             } else {
                 Text("Camera is loading...")
-                    .foregroundColor(.white)
-                    .padding()
             }
-
             
-            // Solo muestra el botón si se ha capturado una imagen
             if let image = capturedImage {
-                Spacer() // Esto empuja el botón hacia la parte inferior
-                Button(action: {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200, height: 200)
+                    .padding()
+                
+                Button("Recognize Text") {
                     if let capturedImage = capturedImage {
-                        TextRecognitionService.recognizeTextInImage(image: capturedImage)
+                        TextRecognitionService.recognizeTextInImage(image: capturedImage) { recognizedMedication in
+                            // Update the form fields with the recognized data
+                            medicationName = recognizedMedication.name
+                            dosage = recognizedMedication.dosage
+                            frequency = recognizedMedication.frequency
+                            duration = recognizedMedication.duration
+                        }
                     }
-                }) {
-                    Text("Recognize Text")
-                        .font(.title2)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
                 }
-                .padding(.bottom, 30) // Ajusta la distancia desde el fondo
+                .padding()
             }
         }
         .onAppear {
-            // Verificar acceso a la cámara
             AVCaptureDevice.requestAccess(for: .video) { response in
                 DispatchQueue.main.async {
                     self.isCameraReady = response
